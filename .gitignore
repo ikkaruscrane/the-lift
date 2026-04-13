@@ -1,0 +1,20 @@
+# Environment and secrets — never commit these
+.env.local
+.env
+
+# Any text files (often used for scratch notes or exports)
+*.txt
+
+# Files with credentials or secrets in the name
+*credentials*
+*secrets*
+
+# Node dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# OS junk
+.DS_Store
