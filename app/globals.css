@@ -1,26 +1,369 @@
+/* app/globals.css */
+/* Global styles for The Lift. */
+/* All colors use CSS variables — never hardcode hex values in components. */
+
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Design system CSS variables
+   Reference: DESIGN_NOTES.md
+   ───────────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --bg-primary:       #0D0D0F;
+  --bg-panel:         #141416;
+  --bg-surface:       #1C1C1F;
+  --bg-glass:         rgba(255, 255, 255, 0.04);
+
+  /* Steel / Nickel tones */
+  --steel-light:      #C8C8CC;
+  --steel-mid:        #8E8E93;
+  --steel-dark:       #48484A;
+  --steel-border:     #3A3A3C;
+
+  /* Accent — Amber indicator glow */
+  --accent-amber:     #FFB340;
+  --accent-amber-dim: #7A5520;
+  --accent-amber-glow: rgba(255, 179, 64, 0.25);
+
+  /* Text */
+  --text-primary:     #E5E5EA;
+  --text-secondary:   #8E8E93;
+  --text-dim:         #48484A;
+  --text-engraved:    #5A5A5E;
+  --text-lit:         #FFB340;
+
+  /* Shadows */
+  --shadow-deep:      0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-button:    0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  --shadow-active:    0 0 20px rgba(255, 179, 64, 0.4);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────────────────────── */
+html, body {
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────────────────────────────────────
+   App shell — elevator layout
+   ───────────────────────────────────────────────────────────────────────────── */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Top bar — floor indicator */
+.floor-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 52px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--accent-amber-dim);
+  flex-shrink: 0;
+}
+
+.floor-indicator__wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: var(--steel-light);
+}
+
+.floor-indicator__display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  color: var(--accent-amber);
+}
+
+.floor-indicator__arrow {
+  font-size: 12px;
+  color: var(--accent-amber);
+}
+
+/* Body row — panel + content */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left button panel */
+.button-panel {
+  width: 88px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--steel-border);
+  display: flex;
+  flex-direction: column-reverse; /* bottom to top — like a real elevator */
+  align-items: center;
+  padding: 20px 0 24px;
+  gap: 14px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.button-panel__divider {
+  width: 40px;
+  height: 1px;
+  background: var(--steel-border);
+  margin: 4px 0;
+}
+
+/* Floor content area */
+.floor-content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  animation: floorIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Elevator buttons
+   ───────────────────────────────────────────────────────────────────────────── */
+.elevator-btn {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2C2C2E, #1C1C1F);
+  border: 1.5px solid var(--steel-dark);
+  box-shadow: var(--shadow-button);
+  color: var(--text-engraved);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* Beveled inner ring */
+.elevator-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+/* Active / current floor */
+.elevator-btn.active {
+  background: radial-gradient(circle at 35% 35%, #3D2800, #1C1200);
+  border-color: var(--accent-amber-dim);
+  color: var(--text-lit);
+  box-shadow: var(--shadow-active);
+}
+
+/* Hover state */
+.elevator-btn:hover:not(.active) {
+  border-color: var(--steel-mid);
+  color: var(--steel-light);
+  transform: scale(1.04);
+}
+
+/* Press feedback */
+.elevator-btn:active {
+  transform: scale(0.94);
+}
+
+.elevator-btn__floor {
+  font-size: 9px;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.elevator-btn__label {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Cards / content surfaces
+   ───────────────────────────────────────────────────────────────────────────── */
+.floor-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--steel-border);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-deep);
+  padding: 20px 24px;
+}
+
+/* Exercise row inside a card */
+.exercise-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--steel-border);
+  border-radius: 10px;
+}
+
+.exercise-row__name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.exercise-row__meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.exercise-row__handle {
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: grab;
+  user-select: none;
+  line-height: 1;
+}
+
+.exercise-row__remove {
+  color: var(--text-dim);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.exercise-row__remove:hover {
+  color: #FF453A;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Day tabs (inside workout floor)
+   ───────────────────────────────────────────────────────────────────────────── */
+.day-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 16px 24px 0;
+  border-bottom: 1px solid var(--steel-border);
+  overflow-x: auto;
+}
+
+.day-tab {
+  padding: 8px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 8px 8px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.day-tab.active {
+  background: var(--bg-surface);
+  border-color: var(--steel-border);
+  color: var(--text-primary);
+}
+
+.day-tab:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Inputs
+   ───────────────────────────────────────────────────────────────────────────── */
+.lift-input {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--steel-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.lift-input::placeholder {
+  color: var(--text-dim);
+}
+
+.lift-input:focus {
+  border-color: var(--accent-amber-dim);
+  box-shadow: 0 0 0 2px var(--accent-amber-glow);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Buttons
+   ───────────────────────────────────────────────────────────────────────────── */
+.lift-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--steel-border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lift-btn:hover {
+  border-color: var(--steel-mid);
+  color: var(--steel-light);
+}
+
+.lift-btn.amber {
+  background: transparent;
+  border-color: var(--accent-amber-dim);
+  color: var(--accent-amber);
+}
+
+.lift-btn.amber:hover {
+  background: var(--accent-amber-glow);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Section label — uppercase steel tag above a group of items
+   ───────────────────────────────────────────────────────────────────────────── */
+.section-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Floor transition animation
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes floorIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
