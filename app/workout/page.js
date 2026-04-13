@@ -9,13 +9,13 @@
 import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 
-// The 5 days in the Sullivan split — used for tabs and filtering.
+// The 5 training days — generic labels so you can rearrange your split freely.
 const SPLIT_DAYS = [
-  'D1 – Push',
-  'D2 – Quads/Glutes',
-  'D3 – Posterior Chain',
-  'D4 – Pull',
-  'D5 – Ham/Glutes',
+  'Day 1',
+  'Day 2',
+  'Day 3',
+  'Day 4',
+  'Day 5',
 ]
 
 export default function WorkoutPage() {
